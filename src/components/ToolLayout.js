@@ -9,8 +9,8 @@ function ToolLayout({ children }) {
   const category = tool ? getCategoryById(tool.category) : null;
 
   if (!tool || !category) return children;
-  const statusLabel = tool.status === 'ready' ? 'Ready' : tool.status === 'adapter' ? 'Adapter Required' : 'Coming Soon';
-  const statusClass = tool.status === 'ready' ? 'status-ready' : tool.status === 'adapter' ? 'status-adapter' : 'status-coming-soon';
+  const statusLabel = tool.status === 'ready' ? 'Ready' : tool.status === 'adapter' ? 'Adapter Required' : tool.status === 'limited' ? 'Limited' : 'Coming Soon';
+  const statusClass = tool.status === 'ready' ? 'status-ready' : tool.status === 'adapter' ? 'status-adapter' : tool.status === 'limited' ? 'status-limited' : 'status-coming-soon';
 
   return (
     <div className="tool-layout-shell">

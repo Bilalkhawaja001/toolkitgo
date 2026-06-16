@@ -44,7 +44,6 @@ import BackgroundRemover from '../tools/image-tools/BackgroundRemover';
 import ImageEnhancer from '../tools/image-tools/ImageEnhancer';
 import WordToPdf from '../tools/pdf-tools/WordToPdf';
 import ExcelToPdf from '../tools/pdf-tools/ExcelToPdf';
-import PptToPdf from '../tools/pdf-tools/PptToPdf';
 import PdfToImage from '../tools/pdf-tools/PdfToImage';
 import PdfSuiteTool, { toolInfo as pdfSuiteToolInfo } from '../tools/pdf-suite/PdfSuiteTool';
 
@@ -94,7 +93,6 @@ const readyToolComponents = {
   'image-enhancer': ImageEnhancer,
   'word-to-pdf': WordToPdf,
   'excel-to-pdf': ExcelToPdf,
-  'ppt-to-pdf': PptToPdf,
   'pdf-to-image': PdfToImage,
   ...pdfSuiteComponents
 };
