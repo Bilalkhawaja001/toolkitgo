@@ -981,8 +981,10 @@ main { flex: 1; }
 .qr-tool .result-panel,
 .dev-tool .result-panel,
 .business-tool .result-panel { word-break: break-word; }
+.invoice-row.po-row { grid-template-columns: minmax(160px, 1fr) 80px 90px 110px auto; }
+.draft-note { font-size: .78rem; color: var(--gray-500); margin-top: .5rem; }
 @media (max-width: 760px) {
   .phase1b-two-panel { grid-template-columns: 1fr; }
-  .invoice-row { grid-template-columns: 1fr; }
+  .invoice-row, .invoice-row.po-row { grid-template-columns: 1fr; }
 }
 /* TOOLKITGO PHASE 1B TOOLS END */

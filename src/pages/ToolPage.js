@@ -34,6 +34,10 @@ import JsMinifier from '../tools/developer-tools/JsMinifier';
 import PasswordGenerator from '../tools/developer-tools/PasswordGenerator';
 import LoremIpsum from '../tools/developer-tools/LoremIpsum';
 import InvoiceGenerator from '../tools/business-tools/InvoiceGenerator';
+import ReceiptGenerator from '../tools/business-tools/ReceiptGenerator';
+import QuotationGenerator from '../tools/business-tools/QuotationGenerator';
+import SalarySlipGenerator from '../tools/business-tools/SalarySlipGenerator';
+import PurchaseOrderGenerator from '../tools/business-tools/PurchaseOrderGenerator';
 import QRCodeGenerator from '../tools/qr-tools/QRCodeGenerator';
 import ImageResize from '../tools/image-tools/ImageResize';
 import ImageCompress from '../tools/image-tools/ImageCompress';
@@ -83,6 +87,10 @@ const readyToolComponents = {
   'password-generator': PasswordGenerator,
   'lorem-ipsum': LoremIpsum,
   'invoice-generator': InvoiceGenerator,
+  'receipt-generator': ReceiptGenerator,
+  'quotation-generator': QuotationGenerator,
+  'salary-slip-generator': SalarySlipGenerator,
+  'purchase-order-generator': PurchaseOrderGenerator,
   'qr-code-generator': QRCodeGenerator,
   'image-resize': ImageResize,
   'image-compress': ImageCompress,
