@@ -1,0 +1,9 @@
+﻿import React, { useMemo, useState } from 'react';
+const TOOL_ID='css-minifier';
+const privacy='Your data stays in your browser. Nothing is uploaded.';
+const sample='/* demo */\n.card {\n  color: red;\n  margin: 10px 20px;\n}';
+const minifyCss=s=>s.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s+/g,' ').replace(/\s*([{}:;,>])\s*/g,'$1').replace(/;}/g,'}').trim();
+const copy=t=>navigator.clipboard?.writeText(t);
+function download(name,text){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:'text/css'})); a.download=name; a.click(); }
+function CssMinifier(){ const [input,setInput]=useState(sample); const output=useMemo(()=>minifyCss(input),[input]); const pct=input.length?Math.max(0,(1-output.length/input.length)*100):0; return <div className="tool-card phase1b-tool dev-tool" data-tool={TOOL_ID}><div className="tool-status-line"><span className="status-ready">Working client-side</span><span>{privacy}</span></div><h2>CSS Minifier</h2><p className="info-note">Basic minifier: comments aur safe extra whitespace remove karta hai; advanced optimizer claim nahi.</p><div className="phase1b-two-panel"><label>CSS input<textarea className="form-textarea code-area" value={input} onChange={e=>setInput(e.target.value)} /></label><label>Minified output<textarea className="form-textarea code-area" readOnly value={output} /></label></div><div className="result-card-grid"><div><span>Before</span><strong>{input.length} chars</strong></div><div><span>After</span><strong>{output.length} chars</strong></div><div><span>Reduction</span><strong>{pct.toFixed(1)}%</strong></div></div><div className="tool-button-row"><button className="btn btn-secondary" onClick={()=>copy(output)} disabled={!output}>Copy</button><button className="btn btn-secondary" onClick={()=>download('minified.css',output)} disabled={!output}>Download .css</button></div></div>; }
+export default CssMinifier;

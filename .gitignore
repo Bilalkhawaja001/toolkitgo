@@ -1,0 +1,47 @@
+﻿# dependencies
+node_modules/
+node_modules.*/
+node_modules.corrupt*/
+node_modules.corrupt-local*/
+
+# production build
+build/
+dist/
+out/
+
+# local env/logs
+.env
+.env.*
+*.log
+serve-*.log
+
+# deploy zips/packages
+*.zip
+.staging-packages/
+
+# QA/browser temp
+.qa-chrome-profile/
+.qa-*.mjs
+.qa-*.json
+
+# OpenClaw/Claude backups
+.openclaw-backup*/
+backup*/
+backups*/
+tmp*/
+temp*/
+
+# local backup package files
+*.backup*
+*.bak
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# caches
+.cache/
+.parcel-cache/

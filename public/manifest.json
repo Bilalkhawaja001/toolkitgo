@@ -1,0 +1,9 @@
+{
+  "short_name": "FreeTools",
+  "name": "Free Online Tools - Browser Utility Demo",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff"
+}
