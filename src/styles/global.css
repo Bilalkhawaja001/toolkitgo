@@ -988,3 +988,47 @@ main { flex: 1; }
   .invoice-row, .invoice-row.po-row { grid-template-columns: 1fr; }
 }
 /* TOOLKITGO PHASE 1B TOOLS END */
+
+/* TOOLKITGO PHASE 3A UI/UX POLISH START */
+/* 1. Tool card uniformity: flex column so the action row pins to the card
+      bottom and descriptions clamp to 2 lines for an even grid rhythm. */
+.tool-card-link { display: flex; flex-direction: column; }
+.tool-card-link p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.1em;
+}
+.tool-card-action { margin-top: auto; }
+
+/* 2. Consistent keyboard focus rings (a11y). Mouse users unaffected
+      (:focus-visible only fires for keyboard/programmatic focus). */
+.btn:focus-visible,
+.mega-trigger:focus-visible,
+.navbar-logo:focus-visible,
+.navbar-links a:focus-visible,
+.tool-card-link:focus-visible,
+.category-card:focus-visible,
+.breadcrumbs a:focus-visible,
+.back-link:focus-visible,
+.coming-soon-actions .btn:focus-visible,
+.site-footer a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+.navbar-search-input:focus-visible { outline: none; }
+
+/* 3. Search results panel: pointer + keyboard focus consistency. */
+.search-result-item { cursor: pointer; transition: background .15s ease; }
+.search-result-item:focus-visible {
+  background: var(--gray-50);
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+/* 4. Empty / loading state spacing uniformity (matches error-message rhythm). */
+.empty-state .btn { margin-top: .25rem; }
+.loading-spinner { padding: .25rem 0; }
+/* TOOLKITGO PHASE 3A UI/UX POLISH END */
