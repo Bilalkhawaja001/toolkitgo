@@ -54,12 +54,15 @@ export const READY_TOOL_IDS = [
   'convert-to-pdf',
   'sign-pdf',
   'pdf-to-text',
+  'compress-pdf',
+  'crop-pdf',
+  'extract-images-from-pdf',
+  'resize-pdf-pages',
 ];
 
 
 export const LIMITED_TOOL_IDS = [
   'optimize-pdf',
-  'compress-pdf',
   'repair-pdf',
   'ocr-pdf',
   'html-to-pdf',
@@ -69,15 +72,12 @@ export const LIMITED_TOOL_IDS = [
   'pdf-to-excel',
   'pdf-to-pdfa',
   'edit-pdf',
-  'crop-pdf',
   'pdf-forms',
   'pdf-security',
   'unlock-pdf',
   'protect-pdf',
   'compare-pdf',
-  'extract-images-from-pdf',
   'deskew-pdf',
-  'resize-pdf-pages',
   'extract-tables-from-pdf',
 ];
 
@@ -183,7 +183,7 @@ const rawTools = [
   { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate all or selected PDF pages.', category: 'pdf-tools', icon: 'RotateCw', popular: false },
   { id: 'add-page-numbers-to-pdf', name: 'Add Page Numbers', description: 'Add page numbers to PDF pages.', category: 'pdf-tools', icon: 'ListOrdered', popular: false },
   { id: 'add-watermark-to-pdf', name: 'Add Watermark', description: 'Apply text watermarks to PDF pages.', category: 'pdf-tools', icon: 'Droplets', popular: false },
-  { id: 'crop-pdf', name: 'Crop PDF', description: 'Limited numeric crop workflow for PDF pages.', category: 'pdf-tools', icon: 'Crop', popular: false },
+  { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim equal margins from every PDF page by setting the crop box.', category: 'pdf-tools', icon: 'Crop', popular: false },
   { id: 'pdf-forms', name: 'PDF Forms', description: 'Limited support for AcroForm fields; complex XFA forms may be unsupported.', category: 'pdf-tools', icon: 'FormInput', popular: false },
   { id: 'pdf-security', name: 'PDF Security Hub', description: 'Links and honest limitations for PDF security tools.', category: 'pdf-tools', icon: 'Shield', popular: false },
   { id: 'unlock-pdf', name: 'Unlock PDF', description: 'Open password-protected PDFs when the user provides the correct password. No cracking.', category: 'pdf-tools', icon: 'Unlock', popular: false },
