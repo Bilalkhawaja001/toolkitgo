@@ -1,101 +1,87 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Wrench } from 'lucide-react';
 import ToolLayout from '../components/ToolLayout';
 import ComingSoonTool from '../components/ComingSoonTool';
-import { getToolById } from '../data/toolsData';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { getToolById, tools } from '../data/toolsData';
 
-import WordCounter from '../tools/text-tools/WordCounter';
-import CharacterCounter from '../tools/text-tools/CharacterCounter';
-import CaseConverter from '../tools/text-tools/CaseConverter';
-import RemoveExtraSpaces from '../tools/text-tools/RemoveExtraSpaces';
-import TextToSlug from '../tools/text-tools/TextToSlug';
-import DuplicateLineRemover from '../tools/text-tools/DuplicateLineRemover';
-import TextSorter from '../tools/text-tools/TextSorter';
-import FindAndReplace from '../tools/text-tools/FindAndReplace';
-import EmiCalculator from '../tools/calculator-tools/EmiCalculator';
-import GstCalculator from '../tools/calculator-tools/GstCalculator';
-import BmiCalculator from '../tools/calculator-tools/BmiCalculator';
-import AgeCalculator from '../tools/calculator-tools/AgeCalculator';
-import PercentageCalculator from '../tools/calculator-tools/PercentageCalculator';
-import UnitConverter from '../tools/calculator-tools/UnitConverter';
-import DateCalculator from '../tools/calculator-tools/DateCalculator';
-import JsonFormatter from '../tools/developer-tools/JsonFormatter';
-import Base64Encoder from '../tools/developer-tools/Base64Encoder';
-import UrlEncoder from '../tools/developer-tools/UrlEncoder';
-import WifiQrGenerator from '../tools/qr-tools/WifiQrGenerator';
-import WhatsAppQrGenerator from '../tools/qr-tools/WhatsAppQrGenerator';
-import BarcodeGenerator from '../tools/qr-tools/BarcodeGenerator';
-import VCardQrGenerator from '../tools/qr-tools/VCardQrGenerator';
-import HtmlEncoder from '../tools/developer-tools/HtmlEncoder';
-import CssMinifier from '../tools/developer-tools/CssMinifier';
-import JsMinifier from '../tools/developer-tools/JsMinifier';
-import PasswordGenerator from '../tools/developer-tools/PasswordGenerator';
-import LoremIpsum from '../tools/developer-tools/LoremIpsum';
-import InvoiceGenerator from '../tools/business-tools/InvoiceGenerator';
-import QRCodeGenerator from '../tools/qr-tools/QRCodeGenerator';
-import ImageResize from '../tools/image-tools/ImageResize';
-import ImageCompress from '../tools/image-tools/ImageCompress';
-import ImageConverter from '../tools/image-tools/ImageConverter';
-import ImageToPdf from '../tools/image-tools/ImageToPdf';
-import CnicDuplexPrintTool from '../tools/image-tools/CnicDuplexPrintTool';
-import BackgroundRemover from '../tools/image-tools/BackgroundRemover';
-import ImageEnhancer from '../tools/image-tools/ImageEnhancer';
-import WordToPdf from '../tools/pdf-tools/WordToPdf';
-import ExcelToPdf from '../tools/pdf-tools/ExcelToPdf';
-import PptToPdf from '../tools/pdf-tools/PptToPdf';
-import PdfToImage from '../tools/pdf-tools/PdfToImage';
-import PdfSuiteTool, { toolInfo as pdfSuiteToolInfo } from '../tools/pdf-suite/PdfSuiteTool';
+const lazyTool = (loader) => lazy(loader);
 
-const PdfSuiteRoute = ({ toolId }) => <PdfSuiteTool toolId={toolId} />;
+const PdfSuiteRoute = (toolId) => lazy(() =>
+  import('../tools/pdf-suite/PdfSuiteTool').then((module) => ({
+    default: () => <module.default toolId={toolId} />
+  }))
+);
 
-const pdfSuiteComponents = Object.keys(pdfSuiteToolInfo).reduce((components, id) => {
-  components[id] = () => <PdfSuiteRoute toolId={id} />;
+const ImageTransformRoute = (toolId) => lazy(() =>
+  import('../tools/image-tools/ImageTransformTool').then((module) => ({
+    default: () => <module.default toolId={toolId} />
+  }))
+);
+
+const pdfSuiteToolIds = tools
+  .filter((tool) => tool.category === 'pdf-tools' && tool.id !== 'pdf-to-image')
+  .map((tool) => tool.id);
+
+const imageTransformToolIds = ['image-crop', 'image-rotate-flip', 'image-watermark', 'image-blur-pixelate', 'color-picker'];
+
+const pdfSuiteComponents = pdfSuiteToolIds.reduce((components, id) => {
+  components[id] = PdfSuiteRoute(id);
+  return components;
+}, {});
+
+const imageTransformComponents = imageTransformToolIds.reduce((components, id) => {
+  components[id] = ImageTransformRoute(id);
   return components;
 }, {});
 
 const readyToolComponents = {
-  'word-counter': WordCounter,
-  'character-counter': CharacterCounter,
-  'case-converter': CaseConverter,
-  'remove-extra-spaces': RemoveExtraSpaces,
-  'text-to-slug': TextToSlug,
-  'duplicate-line-remover': DuplicateLineRemover,
-  'text-sorter': TextSorter,
-  'find-and-replace': FindAndReplace,
-  'emi-calculator': EmiCalculator,
-  'gst-calculator': GstCalculator,
-  'bmi-calculator': BmiCalculator,
-  'age-calculator': AgeCalculator,
-  'percentage-calculator': PercentageCalculator,
-  'unit-converter': UnitConverter,
-  'date-calculator': DateCalculator,
-  'json-formatter': JsonFormatter,
-  'base64-encoder': Base64Encoder,
-  'url-encoder': UrlEncoder,
-  'wifi-qr-generator': WifiQrGenerator,
-  'whatsapp-qr-generator': WhatsAppQrGenerator,
-  'barcode-generator': BarcodeGenerator,
-  'vcard-qr-generator': VCardQrGenerator,
-  'html-encoder': HtmlEncoder,
-  'css-minifier': CssMinifier,
-  'js-minifier': JsMinifier,
-  'password-generator': PasswordGenerator,
-  'lorem-ipsum': LoremIpsum,
-  'invoice-generator': InvoiceGenerator,
-  'qr-code-generator': QRCodeGenerator,
-  'image-resize': ImageResize,
-  'image-compress': ImageCompress,
-  'image-converter': ImageConverter,
-  'image-to-pdf': ImageToPdf,
-  'cnic-id-card-duplex-print': CnicDuplexPrintTool,
-  'background-remover': BackgroundRemover,
-  'image-enhancer': ImageEnhancer,
-  'word-to-pdf': WordToPdf,
-  'excel-to-pdf': ExcelToPdf,
-  'ppt-to-pdf': PptToPdf,
-  'pdf-to-image': PdfToImage,
+  'word-counter': lazyTool(() => import('../tools/text-tools/WordCounter')),
+  'character-counter': lazyTool(() => import('../tools/text-tools/CharacterCounter')),
+  'case-converter': lazyTool(() => import('../tools/text-tools/CaseConverter')),
+  'remove-extra-spaces': lazyTool(() => import('../tools/text-tools/RemoveExtraSpaces')),
+  'text-to-slug': lazyTool(() => import('../tools/text-tools/TextToSlug')),
+  'duplicate-line-remover': lazyTool(() => import('../tools/text-tools/DuplicateLineRemover')),
+  'text-sorter': lazyTool(() => import('../tools/text-tools/TextSorter')),
+  'find-and-replace': lazyTool(() => import('../tools/text-tools/FindAndReplace')),
+  'emi-calculator': lazyTool(() => import('../tools/calculator-tools/EmiCalculator')),
+  'gst-calculator': lazyTool(() => import('../tools/calculator-tools/GstCalculator')),
+  'bmi-calculator': lazyTool(() => import('../tools/calculator-tools/BmiCalculator')),
+  'age-calculator': lazyTool(() => import('../tools/calculator-tools/AgeCalculator')),
+  'percentage-calculator': lazyTool(() => import('../tools/calculator-tools/PercentageCalculator')),
+  'unit-converter': lazyTool(() => import('../tools/calculator-tools/UnitConverter')),
+  'date-calculator': lazyTool(() => import('../tools/calculator-tools/DateCalculator')),
+  'json-formatter': lazyTool(() => import('../tools/developer-tools/JsonFormatter')),
+  'base64-encoder': lazyTool(() => import('../tools/developer-tools/Base64Encoder')),
+  'url-encoder': lazyTool(() => import('../tools/developer-tools/UrlEncoder')),
+  'html-encoder': lazyTool(() => import('../tools/developer-tools/HtmlEncoder')),
+  'css-minifier': lazyTool(() => import('../tools/developer-tools/CssMinifier')),
+  'js-minifier': lazyTool(() => import('../tools/developer-tools/JsMinifier')),
+  'password-generator': lazyTool(() => import('../tools/developer-tools/PasswordGenerator')),
+  'lorem-ipsum': lazyTool(() => import('../tools/developer-tools/LoremIpsum')),
+  'wifi-qr-generator': lazyTool(() => import('../tools/qr-tools/WifiQrGenerator')),
+  'whatsapp-qr-generator': lazyTool(() => import('../tools/qr-tools/WhatsAppQrGenerator')),
+  'barcode-generator': lazyTool(() => import('../tools/qr-tools/BarcodeGenerator')),
+  'vcard-qr-generator': lazyTool(() => import('../tools/qr-tools/VCardQrGenerator')),
+  'qr-code-generator': lazyTool(() => import('../tools/qr-tools/QRCodeGenerator')),
+  'invoice-generator': lazyTool(() => import('../tools/business-tools/InvoiceGenerator')),
+  'receipt-generator': lazyTool(() => import('../tools/business-tools/ReceiptGenerator')),
+  'quotation-generator': lazyTool(() => import('../tools/business-tools/QuotationGenerator')),
+  'salary-slip-generator': lazyTool(() => import('../tools/business-tools/SalarySlipGenerator')),
+  'purchase-order-generator': lazyTool(() => import('../tools/business-tools/PurchaseOrderGenerator')),
+  'image-resize': lazyTool(() => import('../tools/image-tools/ImageResize')),
+  'image-compress': lazyTool(() => import('../tools/image-tools/ImageCompress')),
+  'image-converter': lazyTool(() => import('../tools/image-tools/ImageConverter')),
+  'image-to-pdf': lazyTool(() => import('../tools/image-tools/ImageToPdf')),
+  'cnic-id-card-duplex-print': lazyTool(() => import('../tools/image-tools/CnicDuplexPrintTool')),
+  'background-remover': lazyTool(() => import('../tools/image-tools/BackgroundRemover')),
+  'image-enhancer': lazyTool(() => import('../tools/image-tools/ImageEnhancer')),
+  'image-ocr': lazyTool(() => import('../tools/image-tools/ImageOcr')),
+  'object-remover': lazyTool(() => import('../tools/image-tools/ObjectRemover')),
+  'pdf-to-image': lazyTool(() => import('../tools/pdf-tools/PdfToImage')),
+  ...imageTransformComponents,
   ...pdfSuiteComponents
 };
 
@@ -134,7 +120,11 @@ function ToolPage() {
         <meta name="description" content={tool.description} />
       </Helmet>
       <ToolLayout>
-        {ToolComponent ? <ToolComponent /> : <ComingSoonTool tool={tool} />}
+        {ToolComponent ? (
+          <Suspense fallback={<LoadingSpinner message="Loading tool..." />}>
+            <ToolComponent />
+          </Suspense>
+        ) : <ComingSoonTool tool={tool} />}
       </ToolLayout>
     </div>
   );

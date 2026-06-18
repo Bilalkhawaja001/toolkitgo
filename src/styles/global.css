@@ -981,8 +981,68 @@ main { flex: 1; }
 .qr-tool .result-panel,
 .dev-tool .result-panel,
 .business-tool .result-panel { word-break: break-word; }
+.invoice-row.po-row { grid-template-columns: minmax(160px, 1fr) 80px 90px 110px auto; }
+.draft-note { font-size: .78rem; color: var(--gray-500); margin-top: .5rem; }
 @media (max-width: 760px) {
   .phase1b-two-panel { grid-template-columns: 1fr; }
-  .invoice-row { grid-template-columns: 1fr; }
+  .invoice-row, .invoice-row.po-row { grid-template-columns: 1fr; }
 }
 /* TOOLKITGO PHASE 1B TOOLS END */
+
+/* TOOLKITGO PHASE 3A UI/UX POLISH START */
+/* 1. Tool card uniformity: flex column so the action row pins to the card
+      bottom and descriptions clamp to 2 lines for an even grid rhythm. */
+.tool-card-link { display: flex; flex-direction: column; }
+.tool-card-link p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 3.1em;
+}
+.tool-card-action { margin-top: auto; }
+
+/* 2. Consistent keyboard focus rings (a11y). Mouse users unaffected
+      (:focus-visible only fires for keyboard/programmatic focus). */
+.btn:focus-visible,
+.mega-trigger:focus-visible,
+.navbar-logo:focus-visible,
+.navbar-links a:focus-visible,
+.tool-card-link:focus-visible,
+.category-card:focus-visible,
+.breadcrumbs a:focus-visible,
+.back-link:focus-visible,
+.coming-soon-actions .btn:focus-visible,
+.site-footer a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+.navbar-search-input:focus-visible { outline: none; }
+
+/* 3. Search results panel: pointer + keyboard focus consistency. */
+.search-result-item { cursor: pointer; transition: background .15s ease; }
+.search-result-item:focus-visible {
+  background: var(--gray-50);
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+/* 4. Empty / loading state spacing uniformity (matches error-message rhythm). */
+.empty-state .btn { margin-top: .25rem; }
+.loading-spinner { padding: .25rem 0; }
+/* TOOLKITGO PHASE 3A UI/UX POLISH END */
+
+/* TOOLKITGO PHASE 2C IMAGE TOOLS START */
+.tool-card-wide { max-width: 100%; }
+.tool-header { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.tool-header h2 { color: var(--gray-900); margin: 0; font-size: 1.15rem; }
+.tool-description { color: var(--gray-500); font-size: .9rem; margin-bottom: 1rem; }
+.form-label { display: grid; gap: .4rem; color: var(--gray-700); font-weight: 700; font-size: .85rem; margin: 1rem 0; }
+.option-grid { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; margin: 1rem 0; }
+.option-grid label { display: inline-flex; align-items: center; gap: .4rem; color: var(--gray-700); font-weight: 600; font-size: .875rem; }
+.color-pick-area { margin: 1rem 0; }
+.pick-canvas { max-width: 100%; height: auto; border: 1px solid var(--gray-200); border-radius: var(--radius); cursor: crosshair; background: var(--gray-50); display: block; }
+.color-result-row { display: flex; align-items: center; gap: 1rem; }
+.color-swatch { width: 56px; height: 56px; flex-shrink: 0; border-radius: var(--radius); border: 1px solid var(--gray-300); display: inline-block; }
+/* TOOLKITGO PHASE 2C IMAGE TOOLS END */

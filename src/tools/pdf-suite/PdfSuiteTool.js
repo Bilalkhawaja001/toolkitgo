@@ -36,7 +36,7 @@ const toolInfo = {
   'extract-pages-from-pdf': { title: 'Extract Pages from PDF', kind: 'extract', status: 'working', note: 'Export selected ranges as PDF or ZIP.' },
   'scan-to-pdf': { title: 'Scan to PDF', kind: 'scan', status: 'working', note: 'Convert photos/scans to printable PDFs.' },
   'optimize-pdf': { title: 'Optimize PDF', kind: 'optimize', status: 'limited', note: 'Best-effort client-side re-save. Deep object optimization is limited.' },
-  'compress-pdf': { title: 'Compress PDF', kind: 'compress', status: 'limited', note: 'Raster compression helps scanned PDFs. Vector PDFs may not shrink much.' },
+  'compress-pdf': { title: 'Compress PDF', kind: 'compress', status: 'working', note: 'Re-renders pages to compressed JPEG and rebuilds the PDF. Best for scanned/image PDFs; text-heavy vector PDFs may not shrink.' },
   'repair-pdf': { title: 'Repair PDF', kind: 'repair', status: 'limited', note: 'Best-effort load and re-save. Severely corrupted PDFs may need qpdf/Ghostscript.' },
   'ocr-pdf': { title: 'OCR PDF', kind: 'ocr', status: 'limited', note: 'OCR library is not installed. OCR is browser-based and may be slower on large files.' },
   'convert-to-pdf': { title: 'Convert to PDF', kind: 'convertTo', status: 'working', note: 'Images and typed text convert client-side. Office conversion is limited.' },
@@ -53,7 +53,7 @@ const toolInfo = {
   'rotate-pdf': { title: 'Rotate PDF', kind: 'rotate', status: 'working', note: 'Rotate all or selected pages.' },
   'add-page-numbers-to-pdf': { title: 'Add Page Numbers', kind: 'numbers', status: 'working', note: 'Add page numbers with size and start controls.' },
   'add-watermark-to-pdf': { title: 'Add Watermark', kind: 'watermark', status: 'working', note: 'Add text watermark with opacity and rotation.' },
-  'crop-pdf': { title: 'Crop PDF', kind: 'crop', status: 'limited', note: 'Applies numeric crop margins. Visual crop box is limited in this browser build.' },
+  'crop-pdf': { title: 'Crop PDF', kind: 'crop', status: 'working', note: 'Trims equal margins from every page by setting the PDF crop box. Numeric crop (no visual drag box).' },
   'pdf-forms': { title: 'PDF Forms', kind: 'forms', status: 'limited', note: 'Fills supported AcroForm text fields where possible. Complex XFA forms may be unsupported.' },
   'pdf-security': { title: 'PDF Security Hub', kind: 'securityHub', status: 'limited', note: 'Security tools are linked. Encryption support depends on browser PDF library capability.' },
   'unlock-pdf': { title: 'Unlock PDF', kind: 'unlock', status: 'limited', note: 'Requires the correct password. This tool does not bypass or crack encryption.' },
@@ -62,14 +62,14 @@ const toolInfo = {
   'redact-pdf': { title: 'Redact PDF', kind: 'redact', status: 'backend', note: 'Safe redaction requires selecting regions and burning them into page content. This static build does not fake redaction output.' },
   'compare-pdf': { title: 'Compare PDF', kind: 'compare', status: 'limited', note: 'Compares page count and renders first-page previews. Advanced text diff is limited.' },
   'remove-pdf-metadata': { title: 'Remove PDF Metadata', kind: 'metadata', status: 'working', note: 'Clears standard metadata fields. Forensic metadata removal is not claimed.' },
-  'extract-images-from-pdf': { title: 'Extract Images from PDF', kind: 'extractImages', status: 'limited', note: 'Embedded image extraction is limited; rendered page images are available.' },
+  'extract-images-from-pdf': { title: 'Extract Images from PDF', kind: 'extractImages', status: 'working', note: 'Renders each page to a PNG and packages them in a ZIP. (Rendered page images, not embedded vector objects.)' },
   'pdf-to-text': { title: 'PDF to Text', kind: 'text', status: 'working', note: 'Extracts selectable text. Scanned PDFs need OCR.' },
   'scan-cleaner': { title: 'Scan Cleaner', kind: 'scanCleaner', status: 'working', note: 'Clean blackish scans and output printable PDF.' },
   'deskew-pdf': { title: 'Deskew PDF', kind: 'deskew', status: 'limited', note: 'Manual angle correction is available. Auto deskew is limited.' },
   'grayscale-pdf': { title: 'Grayscale PDF', kind: 'grayscale', status: 'working', note: 'Renders pages and rebuilds a grayscale visual PDF.' },
   'flatten-pdf': { title: 'Flatten PDF', kind: 'flatten', status: 'working', note: 'Renders pages and rebuilds fixed visual PDF. Text may no longer be selectable.' },
   'add-header-footer-to-pdf': { title: 'Add Header/Footer', kind: 'headerFooter', status: 'working', note: 'Add header/footer text and page number tokens.' },
-  'resize-pdf-pages': { title: 'Resize PDF Pages', kind: 'resizePages', status: 'limited', note: 'Places original pages onto A4/Letter/Legal/A3/A5 style pages preserving aspect ratio.' },
+  'resize-pdf-pages': { title: 'Resize PDF Pages', kind: 'resizePages', status: 'working', note: 'Renders pages and fits them onto standard A4-size pages preserving aspect ratio.' },
   'extract-tables-from-pdf': { title: 'Extract Tables from PDF', kind: 'tables', status: 'limited', note: 'Extracts selectable text into CSV rows. Scanned tables need OCR.' }
 };
 
@@ -101,6 +101,7 @@ function PdfSuiteTool({ toolId }) {
   const [pageSize, setPageSize] = useState('a4');
   const [orientation, setOrientation] = useState('portrait');
   const [jpegQuality, setJpegQuality] = useState(0.82);
+  const [cropMargin, setCropMargin] = useState(20);
   const [textResult, setTextResult] = useState('');
   const [preview, setPreview] = useState('');
 
@@ -215,6 +216,21 @@ function PdfSuiteTool({ toolId }) {
         await savePdfDoc(source, 'metadata-removed.pdf'); return;
       }
       if (['repair', 'optimize', 'pdfa'].includes(info.kind)) { await savePdfDoc(source, `${toolId}.pdf`); return; }
+      if (info.kind === 'crop') {
+        const margin = Math.max(0, Number(cropMargin) || 0);
+        let cropped = 0;
+        source.getPages().forEach((page) => {
+          const { width, height } = page.getSize();
+          const nw = width - margin * 2;
+          const nh = height - margin * 2;
+          if (nw > 10 && nh > 10) { page.setCropBox(margin, margin, nw, nh); cropped += 1; }
+        });
+        if (!cropped) throw new Error('Crop margin too large for the page size. Use a smaller margin.');
+        const cropBytes = await source.save({ useObjectStreams: false });
+        const cropBlob = new Blob([cropBytes], { type: 'application/pdf' });
+        if (!cropBlob.size) throw new Error('Generated PDF was empty.');
+        setOutputClean(downloadBlob(cropBlob, 'cropped.pdf')); return;
+      }
       if (info.kind === 'numbers') { const blob = await addTextToPdfPages(first, { type: 'numbers', start: Number(text) || 1, fontSize, skipFirst: false }); setOutputClean(downloadBlob(blob, 'page-numbers.pdf')); return; }
       if (info.kind === 'watermark') { const blob = await addTextToPdfPages(first, { type: 'watermark', text: text || 'Watermark', fontSize: 44, rotation, opacity: 0.25 }); setOutputClean(downloadBlob(blob, 'watermarked.pdf')); return; }
       if (info.kind === 'headerFooter') { const blob = await addTextToPdfPages(first, { type: 'headerFooter', header: text, footer: 'Page {page}', fontSize }); setOutputClean(downloadBlob(blob, 'header-footer.pdf')); return; }
@@ -260,6 +276,7 @@ function PdfSuiteTool({ toolId }) {
         {['split','extract','remove','rotate','organize'].includes(info.kind) && <div><label className="field-title">Pages / ranges</label><input className="form-input" value={pageSelection} onChange={(e) => setPageSelection(e.target.value)} aria-label="Page ranges, example 1,3-5" /></div>}
         {['rotate','organize','watermark'].includes(info.kind) && <div><label className="field-title">Rotation</label><select className="form-select" value={rotation} onChange={(e) => setRotation(Number(e.target.value))}><option value="90">90Â°</option><option value="180">180Â°</option><option value="270">270Â°</option><option value="-5">-5Â°</option><option value="5">+5Â°</option></select></div>}
         {['numbers','watermark','headerFooter','edit','sign'].includes(info.kind) && <div><label className="field-title">Text / start number</label><input className="form-input" value={text} onChange={(e) => setText(e.target.value)} aria-label="Text or start number" /></div>}
+        {info.kind === 'crop' && <div><label className="field-title">Crop margin (points, each side)</label><input className="form-input" type="number" min="0" value={cropMargin} onChange={(e) => setCropMargin(e.target.value)} aria-label="Crop margin in points" /></div>}
         {['numbers','headerFooter','edit','sign'].includes(info.kind) && <div><label className="field-title">Font size</label><input className="form-input" type="number" value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} /></div>}
         {needsImages && <><div><label className="field-title">PDF Quality Mode</label><select className="form-select" value={qualityMode} onChange={(e) => setQualityMode(e.target.value)}><option value="a4">High Quality A4</option><option value="original">Preserve Original Size</option><option value="small">Small File Size</option></select></div><div><label className="field-title">Enhancement Mode</label><select className="form-select" value={enhancementMode} onChange={(e) => setEnhancementMode(e.target.value)}><option value="original">Original</option><option value="clean">Clean Document</option><option value="bw">Black & White Text</option><option value="grayscale">Grayscale Print</option><option value="contrast">High Contrast</option><option value="ink">Ink Saver</option></select></div><div><label className="field-title">Document Type / Print Size</label><select className="form-select" value={documentType} onChange={(e) => setDocumentType(e.target.value)}><option value="full-a4">Full Page A4</option><option value="original">Original Image Size</option><option value="actual-card">ID Card / Driving License - Actual Size</option><option value="front-back-a4">ID Card / Driving License - Front & Back on A4</option><option value="custom">Custom Size</option></select></div><div><label className="field-title">JPEG quality for Small File</label><input type="range" min="0.55" max="0.95" step="0.05" value={jpegQuality} onChange={(e) => setJpegQuality(Number(e.target.value))} /></div></>}
       </div>

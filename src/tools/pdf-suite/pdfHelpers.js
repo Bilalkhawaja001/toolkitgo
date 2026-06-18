@@ -107,8 +107,8 @@ export const createZip = async (files) => {
 export const loadPdfJsDocument = async (file) => {
   const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf');
   pdfjsLib.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL || ''}/pdf.worker.min.js`;
-  const data = await file.arrayBuffer();
-  return pdfjsLib.getDocument({ data, disableWorker: true }).promise;
+  const data = new Uint8Array(await file.arrayBuffer());
+  return pdfjsLib.getDocument({ data }).promise;
 };
 
 export const renderPdfPageToCanvas = async (pdf, pageNumber, scale = 1.5, grayscale = false) => {

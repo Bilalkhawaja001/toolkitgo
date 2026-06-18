@@ -45,10 +45,10 @@ const BACKEND_REQUIRED_TOOL_IDS = new Set([
 ]);
 
 const statusMeta = {
-  ready: { label: 'Working', className: 'status-working', icon: CheckCircle2 },
+  ready: { label: 'Ready', className: 'status-working', icon: CheckCircle2 },
   limited: { label: 'Limited', className: 'status-limited', icon: AlertTriangle },
-  adapter: { label: 'Backend', className: 'status-backend', icon: Server },
-  'coming-soon': { label: 'Soon', className: 'status-soon', icon: Sparkles }
+  adapter: { label: 'Adapter Required', className: 'status-backend', icon: Server },
+  'coming-soon': { label: 'Coming Soon', className: 'status-soon', icon: Sparkles }
 };
 
 const getToolStatus = (tool) => BACKEND_REQUIRED_TOOL_IDS.has(tool.id) ? 'adapter' : tool.status;
