@@ -15,12 +15,25 @@ const PdfSuiteRoute = (toolId) => lazy(() =>
   }))
 );
 
+const ImageTransformRoute = (toolId) => lazy(() =>
+  import('../tools/image-tools/ImageTransformTool').then((module) => ({
+    default: () => <module.default toolId={toolId} />
+  }))
+);
+
 const pdfSuiteToolIds = tools
   .filter((tool) => tool.category === 'pdf-tools' && tool.id !== 'pdf-to-image')
   .map((tool) => tool.id);
 
+const imageTransformToolIds = ['image-crop', 'image-rotate-flip', 'image-watermark', 'image-blur-pixelate', 'color-picker'];
+
 const pdfSuiteComponents = pdfSuiteToolIds.reduce((components, id) => {
   components[id] = PdfSuiteRoute(id);
+  return components;
+}, {});
+
+const imageTransformComponents = imageTransformToolIds.reduce((components, id) => {
+  components[id] = ImageTransformRoute(id);
   return components;
 }, {});
 
@@ -65,7 +78,10 @@ const readyToolComponents = {
   'cnic-id-card-duplex-print': lazyTool(() => import('../tools/image-tools/CnicDuplexPrintTool')),
   'background-remover': lazyTool(() => import('../tools/image-tools/BackgroundRemover')),
   'image-enhancer': lazyTool(() => import('../tools/image-tools/ImageEnhancer')),
+  'image-ocr': lazyTool(() => import('../tools/image-tools/ImageOcr')),
+  'object-remover': lazyTool(() => import('../tools/image-tools/ObjectRemover')),
   'pdf-to-image': lazyTool(() => import('../tools/pdf-tools/PdfToImage')),
+  ...imageTransformComponents,
   ...pdfSuiteComponents
 };
 

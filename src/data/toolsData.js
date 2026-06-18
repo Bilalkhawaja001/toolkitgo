@@ -22,6 +22,11 @@ export const READY_TOOL_IDS = [
   'image-compress',
   'image-converter',
   'image-to-pdf',
+  'image-crop',
+  'image-rotate-flip',
+  'image-watermark',
+  'image-blur-pixelate',
+  'color-picker',
   'cnic-id-card-duplex-print',
   'wifi-qr-generator',
   'whatsapp-qr-generator',
@@ -79,6 +84,8 @@ export const LIMITED_TOOL_IDS = [
   'compare-pdf',
   'deskew-pdf',
   'extract-tables-from-pdf',
+  'image-ocr',
+  'object-remover',
 ];
 
 export const ADAPTER_TOOL_IDS = [
@@ -154,9 +161,16 @@ const rawTools = [
   { id: 'image-compress', name: 'Image Compress', description: 'Compress JPG, PNG, or WEBP images client-side and download the created output.', category: 'image-tools', icon: 'Image', popular: true },
   { id: 'image-converter', name: 'Image Converter', description: 'Convert JPG, PNG, and WEBP images in your browser.', category: 'image-tools', icon: 'Image', popular: true },
   { id: 'image-to-pdf', name: 'Image to PDF', description: 'Combine one or more images into a downloadable PDF in your browser.', category: 'image-tools', icon: 'FileText', popular: true },
+  { id: 'image-crop', name: 'Image Crop', description: 'Crop the center area of JPG, PNG, or WEBP images in your browser.', category: 'image-tools', icon: 'Crop', popular: true },
+  { id: 'image-rotate-flip', name: 'Rotate / Flip Image', description: 'Rotate and flip JPG, PNG, or WEBP images client-side.', category: 'image-tools', icon: 'RotateCw', popular: true },
+  { id: 'image-watermark', name: 'Image Watermark', description: 'Add a text watermark to an image in your browser.', category: 'image-tools', icon: 'Droplets', popular: true },
+  { id: 'image-blur-pixelate', name: 'Blur / Pixelate Image', description: 'Apply blur or pixelation effects to an image client-side.', category: 'image-tools', icon: 'SlidersHorizontal', popular: false },
+  { id: 'color-picker', name: 'Color Picker', description: 'Pick the center pixel color from an uploaded image and show HEX/RGB values.', category: 'image-tools', icon: 'Palette', popular: false },
   { id: 'cnic-id-card-duplex-print', name: 'CNIC / ID Card Duplex Print', description: 'Create aligned front/back A4 duplex PDF layouts for CNIC, ID cards, licenses and similar cards.', category: 'image-tools', icon: 'FileText', popular: true },
   { id: 'background-remover', name: 'Background Remover', description: 'Upload an image and call a configured background remover API. No local fake removal is performed.', category: 'image-tools', icon: 'Image', popular: false },
   { id: 'image-enhancer', name: 'Image Enhancer', description: 'Upload an image and call a configured image enhancer API. No fake enhancement is performed.', category: 'image-tools', icon: 'Sparkles', popular: false },
+  { id: 'image-ocr', name: 'Image OCR', description: 'OCR preview route. Real OCR requires a configured OCR API or client OCR library; no fake text is shown.', category: 'image-tools', icon: 'ScanText', popular: false },
+  { id: 'object-remover', name: 'Object Remover', description: 'Object removal preview route. Real removal requires an inpainting backend; no fake output is shown.', category: 'image-tools', icon: 'Eraser', popular: false },
 
   { id: 'organize-pdf', name: 'Organize PDF', description: 'Reorder, rotate, remove, or extract PDF pages in your browser.', category: 'pdf-tools', icon: 'Layers', popular: true },
   { id: 'merge-pdf', name: 'Merge PDF', description: 'Combine multiple PDF files into one downloadable PDF.', category: 'pdf-tools', icon: 'Files', popular: true },
