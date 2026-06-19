@@ -1,0 +1,6 @@
+# ToolKitGo — PRODUCTION robots.txt (public, indexable).
+# Place at the production root docroot. Replace the Sitemap host with the real domain.
+User-agent: *
+Allow: /
+
+Sitemap: https://REPLACE-WITH-DOMAIN/sitemap.xml

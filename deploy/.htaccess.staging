@@ -1,0 +1,19 @@
+# ToolKitGo — STAGING (.htaccess) reference for /toolkitgo subfolder.
+# Use this when serving the staging build under the /toolkitgo path.
+# Staging is NOT public: noindex is enforced so it never gets indexed.
+
+Options -MultiViews
+RewriteEngine On
+RewriteBase /toolkitgo/
+
+# SPA client-side routing within the subfolder.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+<IfModule mod_headers.c>
+  # Staging must never be indexed.
+  Header always set X-Robots-Tag "noindex, nofollow"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>
